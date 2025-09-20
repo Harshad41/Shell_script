@@ -1,21 +1,45 @@
 #!/bin/bash
-
-echo "============================"
-echo " System Health Information "
-echo "============================"
-
-echo "👤 Current User: $(whoami)"
-echo "⏳ Uptime: $(uptime -p)"
-
-echo "💾 Disk Usage:"
-df -h --total | grep 'total'
-
-echo "🧠 Memory Usage:"
-free -h | grep -E "Mem|Swap"
-
-echo "🔥 Top 5 Memory-consuming Processes:"
-ps -eo pid,comm,%mem,%cpu --sort=-%mem | head -n 6
-
-echo "============================"
-echo " Health check complete! "
-echo "============================"
+###*
+# About:
+# Input:
+#
+# Owner:
+#
+# GitHub API URL
+API_URL="https://api.github.com"
+#GitHub username and personal access token
+helper()
+#GitHub API URL
+API_URL="https://api.github.com"
+# GitHub username and personal access token
+USERNAME=$username
+TOKEN=$token
+# User and Repository information
+REPO_OWNER=$1
+REPO_NAME=$2
+# Function to make a GET request to the GitHub API
+function github_api_get {
+local endpoint="$1"
+local url="${API_URL}/${endpoint}"
+# Send a GET request to the GitHub API with authentication
+curl -s -u "${USERNAME}:${TOKEN}" "$url"
+}
+}
+# Function to list users with read access to the repository
+function list_users_with_read_access {
+local endpoint "repos/${REPO_OWNER}/${REPO_NAME]/collaborators"
+#Fetch the list of collaborators on the repository
+# Fetch the list of collaborators on the repository
+collaborators="$(github_api_get "$endpoint" | jq -r '. [] | select (.permissions.pull true) | .login')"
+# Display the list of collaborators with read access
+if [ -z "$collaborators" ]]; then
+echo "No users with read access found for ${REPO_OWNER}/${REPO_NAME}."
+else
+echo "Users with read access to ${REPO_OWNER}/${REPO_NAME}:"
+echo "$collaborators"
+fi
+}
+function
+# Main script
+echo "Listing users with read access to ${REPO_OWNER}/${REPO_NAME}..."
+list_users_with_read_access
